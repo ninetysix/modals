@@ -1,13 +1,25 @@
 {
-  "name": "modals",
+  "name": "@ninetysix/modals",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "npm run build:lib && npm run build:demo",
+    "build:lib": "npm run copy:readme && ng build alerts",
+    "build:showcase": "ng build alerts",
+    "copy:readme": "copyfiles ./README.md ./dist/alerts",
+    "adjust-version": "npm-run-all adjust-version:*",
+    "adjust-version:lib": "rjp projects/ng-simple-alert/package.json version $VERSION",
+    "adjust-version:main": "rjp package.json version $VERSION",
+    "publish:lib": "npx semantic-release",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "format:check": "prettier --list-different 'projects/**/*.ts'",
+    "format:write": "prettier --write 'projects/**/*.ts'",
+    "test:lib-coverage": "ng test alerts --code-coverage --watch=false",
+    "report-coverage:lib": "cat ./coverage/ng-alert/lcov.info | codecov",
+    "semantic-release": "semantic-release"
   },
   "private": true,
   "dependencies": {
@@ -24,13 +36,25 @@
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
+    "replace-json-property": "^1.4.1",
+    "@angular-devkit/build-angular": "~0.801.2",
+    "@angular-devkit/build-ng-packagr": "~0.801.2",
     "@angular/cli": "~8.1.0",
     "@angular/compiler-cli": "~8.1.0",
     "@angular/language-service": "~8.1.0",
-    "@types/node": "~8.9.4",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
+    "@commitlint/prompt": "^8.1.0",
+    "@semantic-release/exec": "^3.3.5",
+    "@semantic-release/changelog": "^3.0.4",
+    "@semantic-release/git": "^7.0.16",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
+    "@types/node": "~8.9.4",
+    "codecov": "^3.5.0",
     "codelyzer": "^5.0.0",
+    "copyfiles": "^2.1.1",
+    "husky": "^3.0.0",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.1.0",
@@ -38,9 +62,39 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
+    "lint-staged": "^9.2.0",
+    "npm-run-all": "^4.1.5",
+    "ng-packagr": "^5.1.0",
+    "prettier": "^1.18.2",
     "protractor": "~5.4.0",
+    "semantic-release": "^15.13.18",
     "ts-node": "~7.0.0",
+    "tsickle": "^0.35.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "projects/**/*.ts": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ninetysix/modals.git"
+  },
+  "publishConfig": {
+    "access": "restricted"
   }
 }
